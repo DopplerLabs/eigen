@@ -412,7 +412,11 @@ inline NewType cast(const OldType& x)
     static inline Scalar run(const Scalar& x)
     {
       EIGEN_STATIC_ASSERT((!NumTraits<Scalar>::IsComplex), NUMERIC_TYPE_MUST_BE_REAL)
+#if EIGEN_OS_ANDROID == 1
+      using ::round;
+#else
       EIGEN_USING_STD_MATH(round);
+#endif
       return round(x);
     }
   };
@@ -516,9 +520,15 @@ struct expm1_impl {
   {
     EIGEN_STATIC_ASSERT_NON_INTEGER(Scalar)
     #if EIGEN_HAS_CXX11_MATH
-    using std::expm1;
+#if EIGEN_OS_ANDROID == 1
+        using ::expm1;
+#else
+        EIGEN_USING_STD_MATH(expm1);
+#endif
+    #else
+        using std_fallback::expm1;
     #endif
-    using std_fallback::expm1;
+
     return expm1(x);
   }
 };
@@ -553,9 +563,15 @@ struct log1p_impl {
   {
     EIGEN_STATIC_ASSERT_NON_INTEGER(Scalar)
     #if EIGEN_HAS_CXX11_MATH
-    using std::log1p;
+#if EIGEN_OS_ANDROID == 1
+    using ::log1p;
+#else
+    EIGEN_USING_STD_MATH(log1p);
+#endif
+    #else
+        using std_fallback::log1p;
     #endif
-    using std_fallback::log1p;
+
     return log1p(x);
   }
 };
